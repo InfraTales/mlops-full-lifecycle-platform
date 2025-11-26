@@ -1,0 +1,57 @@
+```mermaid
+graph TD
+    subgraph DataSources["Data Sources"]
+        RawData[Raw Data S3]
+        Streaming[Kinesis Streams]
+    end
+
+    subgraph FeatureEng["Feature Engineering"]
+        FeatureStore[SageMaker Feature Store]
+        Glue[AWS Glue ETL]
+    end
+
+    subgraph Training["Training Layer"]
+        Experiments[Experiment Tracking]
+        Training[SageMaker Training]
+        HPO[Hyperparameter Tuning]
+    end
+
+    subgraph Registry["Model Registry"]
+        ModelRegistry[SageMaker Model Registry]
+        Artifacts[S3 Model Artifacts]
+    end
+
+    subgraph Deployment["Deployment Layer"]
+        Endpoints[SageMaker Endpoints]
+        ABTest[A/B Testing]
+        Champion[Champion/Challenger]
+    end
+
+    subgraph Monitoring["Monitoring"]
+        ModelMonitor[Model Monitor]
+        CloudWatch[CloudWatch Dashboards]
+        Alerts[SNS Alerts]
+    end
+
+    subgraph Orchestration["Orchestration"]
+        StepFunctions[Step Functions]
+        EventBridge[EventBridge]
+    end
+
+    RawData --> Glue
+    Streaming --> FeatureStore
+    Glue --> FeatureStore
+    FeatureStore --> Training
+    Training --> Experiments
+    HPO --> Training
+    Training --> ModelRegistry
+    ModelRegistry --> Artifacts
+    ModelRegistry --> Endpoints
+    Endpoints --> ABTest
+    ABTest --> Champion
+    Endpoints --> ModelMonitor
+    ModelMonitor --> CloudWatch
+    CloudWatch --> Alerts
+    EventBridge --> StepFunctions
+    StepFunctions --> Training
+```

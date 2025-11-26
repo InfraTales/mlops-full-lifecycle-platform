@@ -1,0 +1,30 @@
+```mermaid
+sequenceDiagram
+    participant DS as Data Scientist
+    participant SF as Step Functions
+    participant FS as Feature Store
+    participant SM as SageMaker Training
+    participant MR as Model Registry
+    participant EP as Endpoint
+    participant MM as Model Monitor
+
+    DS->>SF: Trigger training pipeline
+    SF->>FS: Fetch training features
+    FS-->>SF: Return feature dataset
+    SF->>SM: Start training job
+    SM->>SM: Train model
+    SM-->>SF: Training complete
+    SF->>MR: Register model version
+    MR-->>SF: Model registered
+    
+    alt Auto-deploy enabled
+        SF->>EP: Deploy to staging
+        EP-->>SF: Deployment complete
+        SF->>MM: Enable monitoring
+    end
+
+    DS->>MR: Approve model
+    MR->>EP: Deploy to production
+    EP->>MM: Start monitoring
+    MM-->>DS: Performance alerts
+```

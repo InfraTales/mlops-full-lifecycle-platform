@@ -1,0 +1,51 @@
+```mermaid
+graph LR
+    subgraph Ingestion["Data Ingestion"]
+        Raw[Raw Data]
+        Stream[Streaming Data]
+    end
+
+    subgraph Features["Feature Engineering"]
+        Transform[Feature Transform]
+        Store[Feature Store]
+    end
+
+    subgraph Training["Model Training"]
+        Experiment[Experiments]
+        Train[Training Jobs]
+        Tune[HPO]
+    end
+
+    subgraph Registry["Model Management"]
+        Register[Model Registry]
+        Artifacts[Artifacts S3]
+    end
+
+    subgraph Serving["Model Serving"]
+        Deploy[Endpoints]
+        ABTest[A/B Testing]
+        Inference[Inference]
+    end
+
+    subgraph Feedback["Feedback Loop"]
+        Monitor[Model Monitor]
+        Drift[Drift Detection]
+        Retrain[Auto-Retrain]
+    end
+
+    Raw --> Transform
+    Stream --> Transform
+    Transform --> Store
+    Store --> Train
+    Experiment --> Train
+    Tune --> Train
+    Train --> Register
+    Register --> Artifacts
+    Register --> Deploy
+    Deploy --> ABTest
+    ABTest --> Inference
+    Inference --> Monitor
+    Monitor --> Drift
+    Drift --> Retrain
+    Retrain --> Train
+```
