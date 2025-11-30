@@ -90,4 +90,4 @@ Common issues and resolutions for the **MLOps Full Lifecycle Platform**.
 - Enable spot training for non-critical jobs
 - Implement endpoint auto-scaling
 
-> For architecture details, see `ARCHITECTURE.md`.
+> For architecture details, see the project README.
