@@ -1,99 +1,70 @@
-# Runbook
+# Operations Runbook
 
-Operational guide for deploying, operating, and maintaining the **MLOps Full Lifecycle Platform**.
+## Overview
+This runbook provides operational procedures for managing and maintaining this infrastructure.
 
-## 1. Deployment
+## Prerequisites
+- AWS CLI configured
+- Terraform/CDK/Pulumi installed
+- Appropriate IAM permissions
 
-### Prerequisites
+## Common Operations
 
-- AWS CLI configured with appropriate credentials
-- Node.js 18+ and npm installed
-- AWS CDK CLI installed (`npm install -g aws-cdk`)
-- Docker installed (for custom containers)
-
-### Deploy Steps
-
+### Deployment
 ```bash
-# Install dependencies
-npm install
+# Development
+./scripts/deploy.sh dev
 
-# Bootstrap CDK (first time only)
-cdk bootstrap
-
-# Deploy to dev
-cdk deploy --context environment=dev
-
-# Deploy to production
-cdk deploy --context environment=prod
+# Production
+./scripts/deploy.sh prod
 ```
 
-## 2. Training Pipelines
+### Monitoring
+- CloudWatch Dashboard: Check AWS Console
+- Alerts: Configured via SNS
+- Logs: CloudWatch Logs
 
-### Trigger Training Job
+### Troubleshooting
 
+#### Issue: Deployment Fails
+**Symptoms**: Terraform/CDK apply fails
+**Resolution**:
+1. Check AWS credentials
+2. Verify IAM permissions
+3. Review error logs
+4. Check resource quotas
+
+#### Issue: High Costs
+**Symptoms**: Unexpected AWS charges
+**Resolution**:
+1. Review Cost Explorer
+2. Check for unused resources
+3. Verify auto-scaling policies
+4. Review instance types
+
+### Maintenance Windows
+- Preferred: Sunday 02:00-06:00 UTC
+- Avoid: Business hours (09:00-17:00 local time)
+
+### Escalation
+1. Team Lead
+2. DevOps Manager
+3. On-call Engineer
+
+## Emergency Procedures
+
+### Rollback
 ```bash
-# Start training pipeline
-aws stepfunctions start-execution \
-  --state-machine-arn arn:aws:states:region:account:stateMachine:mlops-training \
-  --input '{"model_name": "my-model", "hyperparameters": {...}}'
+# Terraform
+terraform apply -var-file=previous.tfvars
+
+# CDK
+cdk deploy --previous-version
+
+# Pulumi
+pulumi stack select previous
+pulumi up
 ```
 
-### Monitor Training
-
-- Check SageMaker Training Jobs console
-- View CloudWatch logs for training metrics
-- Monitor Step Functions execution
-
-## 3. Model Deployment
-
-### Deploy New Model Version
-
-```bash
-# Register model in Model Registry
-aws sagemaker create-model-package ...
-
-# Update endpoint with new model
-aws sagemaker update-endpoint --endpoint-name prod-endpoint \
-  --endpoint-config-name new-config
-```
-
-### A/B Testing
-
-- Configure traffic splitting in endpoint config
-- Monitor metrics for each variant
-- Promote winner via pipeline
-
-## 4. Monitoring
-
-### Key Metrics to Watch
-
-- **Training**: Job duration, loss curves, resource utilization
-- **Inference**: Latency, throughput, error rates
-- **Feature Store**: Feature freshness, serving latency
-- **Data drift**: Input distribution changes
-
-### Dashboards
-
-Pre-configured dashboards for:
-
-- Model performance overview
-- Training pipeline status
-- Inference endpoint health
-- Feature store metrics
-
-## 5. Maintenance
-
-### Regular Tasks
-
-- Review model performance weekly
-- Retrain models on schedule or drift detection
-- Archive old model versions
-- Update container images quarterly
-
-### Teardown
-
-```bash
-cdk destroy --context environment=dev
-```
-
-> For troubleshooting common issues, see `docs/troubleshooting.md`.
+### Disaster Recovery
+See [DISASTER_RECOVERY.md](DISASTER_RECOVERY.md)
